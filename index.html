@@ -1,1 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scattergories Style Game</title>
 
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background: #f2f2f2;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 95%;
+  height: 90vh;
+  border: 3px solid #111;
+  display: flex;
+  flex-direction: column;
+}
+
+/* MAIN TOP AREA */
+.top {
+  flex: 1;
+  display: flex;
+}
+
+/* LEFT PANEL */
+.left {
+  width: 30%;
+  border-right: 3px solid #111;
+  display: flex;
+  flex-direction: column;
+}
+
+.letter-box {
+  flex: 2;
+  border-bottom: 3px solid #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: repeating-linear-gradient(
+    45deg,
+    #eee,
+    #eee 6px,
+    #ddd 6px,
+    #ddd 12px
+  );
+}
+
+.letter-box h1 {
+  font-size: 150px;
+  font-weight: bold;
+}
+
+.bottom-left {
+  flex: 1;
+  display: flex;
+}
+
+.timer {
+  flex: 1;
+  border-right: 3px solid #111;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.timer h2 {
+  font-size: 60px;
+}
+
+.play {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.play button {
+  font-size: 40px;
+  padding: 20px 40px;
+  cursor: pointer;
+  border: none;
+  background: #111;
+  color: white;
+}
+
+/* MIDDLE CATEGORIES */
+.middle {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.category {
+  height: 40px;
+  background: linear-gradient(to right, #111 60%, transparent 60%);
+}
+
+/* RIGHT PANEL */
+.right {
+  width: 15%;
+  border-left: 3px solid #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.right button {
+  font-size: 20px;
+  padding: 15px 25px;
+  cursor: pointer;
+  border: 2px solid #111;
+  background: white;
+}
+
+.footer {
+  border-top: 3px solid #111;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="top">
+    
+    <div class="left">
+      <div class="letter-box">
+        <h1 id="letter">A</h1>
+      </div>
+
+      <div class="bottom-left">
+        <div class="timer">
+          <h2 id="time">120</h2>
+        </div>
+        <div class="play">
+          <button onclick="startTimer()">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="middle" id="categories">
+      <!-- 12 categories -->
+    </div>
+
+    <div class="right">
+      <button onclick="resetGame()">Restart</button>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <div>Scattergories List Generator</div>
+    <div>Change Colors</div>
+  </div>
+
+</div>
+
+<script>
+const letterEl = document.getElementById("letter");
+const timeEl = document.getElementById("time");
+const categoriesEl = document.getElementById("categories");
+
+let timer;
+let timeLeft = 120;
+
+/* Generate 12 category bars */
+function generateCategories() {
+  categoriesEl.innerHTML = "";
+  for (let i = 0; i < 12; i++) {
+    const div = document.createElement("div");
+    div.classList.add("category");
+    div.style.background = `linear-gradient(to right, #111 ${Math.floor(Math.random()*70+30)}%, transparent 0%)`;
+    categoriesEl.appendChild(div);
+  }
+}
+
+/* Random letter */
+function randomLetter() {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  return letters[Math.floor(Math.random() * letters.length)];
+}
+
+/* Reset game */
+function resetGame() {
+  clearInterval(timer);
+  timeLeft = 120;
+  timeEl.textContent = timeLeft;
+  letterEl.textContent = randomLetter();
+  generateCategories();
+}
+
+/* Start timer */
+function startTimer() {
+  clearInterval(timer);
+  timer = setInterval(() => {
+    if (timeLeft > 0) {
+      timeLeft--;
+      timeEl.textContent = timeLeft;
+    } else {
+      clearInterval(timer);
+    }
+  }, 1000);
+}
+
+/* On page load */
+window.onload = () => {
+  resetGame();
+};
+</script>
+
+</body>
+</html>
