@@ -227,7 +227,7 @@ const categoriesEl = document.getElementById("categories");
 /* Load categories safely */
 async function loadCategories() {
   try {
-    const res = await fetch("scattergories/list.json");
+    const res = await fetch("../scattergories/list.json");
     if (!res.ok) throw new Error("Failed to load JSON");
     const data = await res.json();
     categoriesData = data.categories;
