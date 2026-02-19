@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scattergories Game</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background: #f4f4f4;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 95%;
+  height: 90vh;
+  border: 3px solid #111;
+  display: flex;
+  flex-direction: column;
+}
+
+/* MAIN AREA */
+.top {
+  flex: 1;
+  display: flex;
+}
+
+/* LEFT PANEL */
+.left {
+  width: 30%;
+  border-right: 3px solid #111;
+  display: flex;
+  flex-direction: column;
+}
+
+.letter-box {
+  flex: 2;
+  border-bottom: 3px solid #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: repeating-linear-gradient(
+    45deg,
+    #eee,
+    #eee 6px,
+    #ddd 6px,
+    #ddd 12px
+  );
+}
+
+.letter-box h1 {
+  font-size: 150px;
+}
+
+.bottom-left {
+  flex: 1;
+  display: flex;
+}
+
+.timer {
+  flex: 1;
+  border-right: 3px solid #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 60px;
+}
+
+.play {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.play button {
+  font-size: 40px;
+  padding: 20px 40px;
+  cursor: pointer;
+  background: #111;
+  color: white;
+  border: none;
+}
+
+/* MIDDLE PANEL */
+.middle {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.category {
+  padding: 8px 12px;
+  background: #111;
+  color: white;
+  font-weight: bold;
+}
+
+/* RIGHT PANEL */
+.right {
+  width: 15%;
+  border-left: 3px solid #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.right button {
+  padding: 15px 25px;
+  cursor: pointer;
+  border: 2px solid #111;
+  background: white;
+  font-size: 18px;
+}
+
+/* FOOTER */
+.footer {
+  border-top: 3px solid #111;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.footer span {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* MODAL */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  width: 400px;
+  max-width: 90%;
+}
+
+.modal-content h2 {
+  margin-bottom: 15px;
+}
+
+.modal-content button {
+  margin-top: 15px;
+  padding: 8px 15px;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="top">
+
+    <div class="left">
+      <div class="letter-box">
+        <h1 id="letter">A</h1>
+      </div>
+
+      <div class="bottom-left">
+        <div class="timer">
+          <span id="time">120</span>
+        </div>
+        <div class="play">
+          <button onclick="startTimer()">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="middle" id="categories"></div>
+
+    <div class="right">
+      <button onclick="resetGame()">Restart</button>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <div>Scattergories List Generator</div>
+    <span onclick="openModal()">How To Play</span>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h2>How To Play</h2>
+    <p>
+      You will be given 12 categories and a random letter.
+      You have 120 seconds to think of one word for each category
+      that starts with the chosen letter.
+      No repeats allowed!
+    </p>
+    <button onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<script>
+let timeLeft = 120;
+let timerInterval;
+let allCategories = [];
+
+const letterEl = document.getElementById("letter");
+const timeEl = document.getElementById("time");
+const categoriesEl = document.getElementById("categories");
+
+/* Fetch categories from JSON */
+async function loadCategories() {
+  const response = await fetch("categories.json");
+  const data = await response.json();
+  allCategories = data.categories;
+}
+
+/* Pick 12 random categories */
+function generateCategories() {
+  categoriesEl.innerHTML = "";
+  const shuffled = allCategories.sort(() => 0.5 - Math.random());
+  const selected = shuffled.slice(0, 12);
+
+  selected.forEach(cat => {
+    const div = document.createElement("div");
+    div.classList.add("category");
+    div.textContent = cat;
+    categoriesEl.appendChild(div);
+  });
+}
+
+/* Random letter */
+function randomLetter() {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  return letters[Math.floor(Math.random() * letters.length)];
+}
+
+/* Timer */
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (timeLeft > 0) {
+      timeLeft--;
+      timeEl.textContent = timeLeft;
+    } else {
+      clearInterval(timerInterval);
+    }
+  }, 1000);
+}
+
+/* Reset */
+function resetGame() {
+  clearInterval(timerInterval);
+  timeLeft = 120;
+  timeEl.textContent = timeLeft;
+  letterEl.textContent = randomLetter();
+  generateCategories();
+}
+
+/* Modal */
+function openModal() {
+  document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
+
+/* Init */
+window.onload = async () => {
+  await loadCategories();
+  resetGame();
+};
+</script>
+
+</body>
+</html>
