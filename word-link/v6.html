@@ -230,7 +230,7 @@ timerEl.textContent=showMS?remaining.toFixed(3):Math.ceil(remaining);
 function gameOver(){
 running=false;
 input.disabled=true;
-showPopup("Game Over","Your score: "+score);
+showPopup("Game Over!","You ran out of time & your finishing score was: "+score);
 }
 
 function submitWord(){
@@ -240,7 +240,7 @@ let val=input.value.toLowerCase().trim();
 if(!val) return;
 
 if(usedWords.includes(val)){
-showPopup("Error","You already used that word!");
+showPopup("Error!","You already used that word!");
 return;
 }
 
