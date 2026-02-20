@@ -202,6 +202,8 @@ return words[Math.floor(Math.random()*words.length)];
 function startGame(){
 running=true;
 document.getElementById("pauseBtn").disabled=false;
+// NEW LINE // THIS WILL BE WHAT BREAKS IT
+document.getElementById("playBtn").display=none;
 input.disabled=false;
 if(!currentWord){
 currentWord=randomWord();
@@ -253,7 +255,7 @@ let speedBonus=Math.floor(timer*5);
 score+=val.length*10+speedBonus;
 document.getElementById("score").textContent=score;
 
-historyEl.innerHTML+=val+"➜";
+historyEl.innerHTML+=val+" ➜ ";
 usedWords.push(val);
 
 currentWord=val;
